@@ -72,23 +72,21 @@ const addToCart = () => {
         let productArray = JSON.parse(localStorage.getItem("product"));
         let select = document.getElementById("colors");
         let amountInput = document.getElementById("quantity");
-        console.log(amountInput.value);
-        console.log(select.value);
 
-        const fusionproductAndColor = Object.assign({}, productDetails, {color: `${select.value}`, amount: amountInput.value,});
+        const fusionproductAndColor = Object.assign({}, productDetails, {color: `${select.value}`, amount: 0,});
 
         if (productArray == null) {
             productArray = [];
             productArray.push(fusionproductAndColor);
-            productArray.amount += amountInput.value;
+            productArray.amount += parseInt(amountInput.value);
             localStorage.setItem("product", JSON.stringify(productArray));
         } else if (productArray != null) {
             for (i = 0; i < productArray.length; i++){
-                console.log("test");
+                
                 if (productArray[i]._id == productDetails._id && productArray[i].color == select.value) {
                     return (
-                        productArray[i].amount += amountInput.value,
-                        productArray[0].amount += productArray[i].amount, 
+                        productArray[i].amount = parseInt(amountInput.value),
+                        productArray[0].amount += parseInt(amountInput.value), 
                         console.log("quantite"),
                         localStorage.setItem("product",JSON.stringify(productArray)),
                         (productArray = JSON.parse(localStorage.getItem("product")))
@@ -99,7 +97,7 @@ const addToCart = () => {
                 if (productArray[i]._id == productDetails._id && productArray[i].color != productDetails.color){
                     return (
                         productArray.push(fusionproductAndColor),
-                        localStorage.setItem("product",JSON.stringify(productArray))
+                        localStorage.setItem("product",JSON.stringify(productArray)),
                         (productArray = JSON.parse(localStorage.getItem("product")))
                     );
                 }
@@ -108,7 +106,7 @@ const addToCart = () => {
                 if (productArray[i]._id != productDetails._id){
                     return (
                         productArray.push(fusionproductAndColor),
-                        localStorage.setItem("product",JSON.stringify(productArray))
+                        localStorage.setItem("product",JSON.stringify(productArray)),
                         (productArray = JSON.parse(localStorage.getItem("product")))
                     );
                 }
