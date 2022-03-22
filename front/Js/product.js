@@ -1,118 +1,87 @@
 const productId = window.location.search.split("?").join("");
 const productItem = document.getElementById("itemDetails");
 
-let productDetails = [];
+let allProductDetails = [];
+
 
 async function fetchProduct() {
     await fetch(`http://localhost:3000/api/products/${productId}`)
     .then((res) => res.json())
-    .then((data) => productDetails = data);
+    .then((data) => allProductDetails = data);
 }
 
 async function productDisplay() {
     await fetchProduct();
-    productItem.innerHTML = `
 
-            <article>
-                <div class="item__img">
-                    <img src="${productDetails.imageUrl}" alt="${productDetails.altTxt}">
-                </div>
-                <div class="item__content">
+    let productImage = document.querySelector(".item__img");
+    let productTitle = document.querySelector("#title");
+    let productPrice = document.querySelector("#price");
+    let productDescription = document.querySelector("#description");
 
-                <div class="item__content__titlePrice">
-                <h1 id="title">${productDetails.name}</h1>
-                <p>Prix : <span id="price">${productDetails.price}</span>€</p>
-                </div>
-
-                <div class="item__content__description">
-                <p class="item__content__description__title">Description :</p>
-                <p id="description">${productDetails.description}</p>
-                </div>
-
-                <div class="item__content__settings">
-                <div class="item__content__settings__color">
-                    <label for="color-select">Choisir une couleur :</label>
-                    <select name="color-select" id="colors">
-                        <option value="">--SVP, choisissez une couleur --</option>
-                    </select>
-                </div>
-
-                <div class="item__content__settings__quantity">
-                    <label for="itemQuantity">Nombre d'article(s) (1-100) :</label>
-                    <input type="number" name="itemQuantity" min="1" max="100" value="0" id="quantity">
-                </div>
-                </div>
-
-                <div class="item__content__addButton">
-                <button id="addToCart">Ajouter au panier</button>
-                </div>
-
-                </div>
-            </article>
-        
-    `
-
+    productImage.innerHTML = `<img src="${allProductDetails.imageUrl}" alt="${allProductDetails.altTxt}"> `;
+    productTitle.innerHTML = `${allProductDetails.name}`;
+    productPrice.innerHTML = `${allProductDetails.price}`;
+    productDescription.innerHTML = `${allProductDetails.description}`;
+    
     let select = document.getElementById("colors");
     
-    productDetails.colors.forEach((color) => {
+    allProductDetails.colors.forEach((color) => {
         let tagOption = document.createElement("option");
 
         tagOption.innerHTML = `${color} `;
         tagOption.value = `${color} `;
 
         select.appendChild(tagOption);
-        addToCart(productDetails);
     });
 };
 productDisplay();
 
-const addToCart = () => {
-    let button = document.getElementById("addToCart");
-    button.addEventListener("click", () => {
-        let productArray = JSON.parse(localStorage.getItem("product"));
-        let select = document.getElementById("colors");
+
+let button = document.getElementById("addToCartButton");
+    console.log(button);
+    button.onclick = function(event) {
+        console.log("kuku le bouton");
+        let productDetails = [allProductDetails._id];
         let amountInput = document.getElementById("quantity");
-
-        const fusionproductAndColor = Object.assign({}, productDetails, {color: `${select.value}`, amount: 0,});
-
-        if (productArray == null) {
+        let select = document.getElementById("colors");
+        let productFinalDetails = Object.assign({}, productDetails, {
+            color: `${select.value}`,
+            quantity: amountInput.value,
+        });
+        let productArray = JSON.parse(localStorage.getItem("product"));
+        console.log(productArray);
+        if (productArray == null ) {
             productArray = [];
-            productArray.push(fusionproductAndColor);
-            productArray.amount += parseInt(amountInput.value);
+            productArray.push(productFinalDetails);
             localStorage.setItem("product", JSON.stringify(productArray));
+            productArray = JSON.parse(localStorage.getItem("product"));
+            console.log(productArray.length);
         } else if (productArray != null) {
-            for (i = 0; i < productArray.length; i++){
-                
-                if (productArray[i]._id == productDetails._id && productArray[i].color == select.value) {
-                    return (
-                        productArray[i].amount = parseInt(amountInput.value),
-                        productArray[0].amount += parseInt(amountInput.value), 
-                        console.log("quantite"),
-                        localStorage.setItem("product",JSON.stringify(productArray)),
-                        (productArray = JSON.parse(localStorage.getItem("product")))
+            for (var i = 0; i < productArray.length; i++) {
+                if (productArray[i]._id == productDetails._id && productArray[i].color == select.value){
+                    return(
+                        productArray[i].quantity = parseInt(productArray[i].quantity) + parseInt(amountInput.value),
+                        localStorage.setItem("product", JSON.stringify(productArray)),
+                        productArray = JSON.parse(localStorage.getItem("product"))
                     );
                 }
             }
-            for (i = 0; i < productArray.length; i++) {
-                if (productArray[i]._id == productDetails._id && productArray[i].color != productDetails.color){
-                    return (
-                        productArray.push(fusionproductAndColor),
-                        localStorage.setItem("product",JSON.stringify(productArray)),
-                        (productArray = JSON.parse(localStorage.getItem("product")))
-                    );
+            for (var i = 0; i < productArray.length; i++) {
+                if (productArray[i]._id == productDetails._id && productArray[i].color != select.value || 
+                    productArray[i]._id != productDetails._id ) {
+                  return (
+                    productArray.push(productFinalDetails),
+                    localStorage.setItem("product", JSON.stringify(productArray)),
+                    productArray = JSON.parse(localStorage.getItem("product"))
+                  );
                 }
             }
-            for (i = 0; i < productArray.length; i++) {
-                if (productArray[i]._id != productDetails._id){
-                    return (
-                        productArray.push(fusionproductAndColor),
-                        localStorage.setItem("product",JSON.stringify(productArray)),
-                        (productArray = JSON.parse(localStorage.getItem("product")))
-                    );
-                }
-            } 
         }
-    });
-    return productArray = JSON.parse(localStorage.getItem("product"));
+    };  
+
+
+
+
+
     
-};
+
