@@ -77,14 +77,16 @@ const removeProduct = async (cartDisplay) => {
       for(let i = 0; i < addProduct.length; i++){
         if (addProduct.length == 1) {
           return (
-            localStorage.removeItem("product")
+            localStorage.removeItem("product"),
+            location.reload()
           )
         }
         else if (addProduct[i]["0"] == remove.dataset.id && addProduct[i].color == remove.dataset.color) {
           return (
             addProduct.splice(i, 1),
             console.log(addProduct),
-            localStorage.setItem("product", JSON.stringify(addProduct))
+            localStorage.setItem("product", JSON.stringify(addProduct)),
+            location.reload()
           )
         }
       }
@@ -110,7 +112,7 @@ const quantityChange = async (cartDisplay) => {
             console.log("ajouté!"),
             productCost = parseInt(productCartDetails.price) * parseInt(addProduct[i].quantity),
             console.log(productCost),
-            window.location.href = "cart.html"
+            location.reload()
           );
         }
       }
