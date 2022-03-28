@@ -48,21 +48,21 @@ let button = document.getElementById("addToCartButton");
             color: `${select.value}`,
             quantity: amountInput.value,
         });
-        let productArray = JSON.parse(localStorage.getItem("product"));
+        let productArray = JSON.parse(localStorage.getItem("product-ID"));
         console.log(productArray);
         if (productArray == null ) {
             productArray = [];
             productArray.push(productFinalDetails);
-            localStorage.setItem("product", JSON.stringify(productArray));
-            productArray = JSON.parse(localStorage.getItem("product"));
+            localStorage.setItem("product-ID", JSON.stringify(productArray));
+            productArray = JSON.parse(localStorage.getItem("product-ID"));
             console.log(productArray.length);
         } else if (productArray != null) {
             for (var i = 0; i < productArray.length; i++) {
                 if (productArray[i]._id == productDetails._id && productArray[i].color == select.value){
                     return(
                         productArray[i].quantity = parseInt(productArray[i].quantity) + parseInt(amountInput.value),
-                        localStorage.setItem("product", JSON.stringify(productArray)),
-                        productArray = JSON.parse(localStorage.getItem("product"))
+                        localStorage.setItem("product-ID", JSON.stringify(productArray)),
+                        productArray = JSON.parse(localStorage.getItem("product-ID"))
                     );
                 }
             }
@@ -71,8 +71,8 @@ let button = document.getElementById("addToCartButton");
                     productArray[i]._id != productDetails._id ) {
                   return (
                     productArray.push(productFinalDetails),
-                    localStorage.setItem("product", JSON.stringify(productArray)),
-                    productArray = JSON.parse(localStorage.getItem("product"))
+                    localStorage.setItem("product-ID", JSON.stringify(productArray)),
+                    productArray = JSON.parse(localStorage.getItem("product-ID"))
                   );
                 }
             }
