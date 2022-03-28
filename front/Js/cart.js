@@ -1,4 +1,4 @@
-let addProduct = JSON.parse(localStorage.getItem("product"));
+let addProduct = JSON.parse(localStorage.getItem("product-ID"));
 let cartItems = document.getElementById("cart__items");
 let totalCost = 0;
 let totalOfArticles = 0;
@@ -57,6 +57,8 @@ async function cartDisplay () {
         quantityChange();
 
         removeProduct();
+
+        signUp();
         
         
 
@@ -77,7 +79,7 @@ const removeProduct = async (cartDisplay) => {
       for(let i = 0; i < addProduct.length; i++){
         if (addProduct.length == 1) {
           return (
-            localStorage.removeItem("product"),
+            localStorage.removeItem("product-ID"),
             location.reload()
           )
         }
@@ -85,7 +87,7 @@ const removeProduct = async (cartDisplay) => {
           return (
             addProduct.splice(i, 1),
             console.log(addProduct),
-            localStorage.setItem("product", JSON.stringify(addProduct)),
+            localStorage.setItem("product-ID", JSON.stringify(addProduct)),
             location.reload()
           )
         }
@@ -108,7 +110,7 @@ const quantityChange = async (cartDisplay) => {
             console.log(change.value),
             addProduct[i].quantity = parseInt(change.value),
             console.log(addProduct[i].quantity),
-            localStorage.setItem("product", JSON.stringify(addProduct)),
+            localStorage.setItem("product-ID", JSON.stringify(addProduct)),
             console.log("ajouté!"),
             productCost = parseInt(productCartDetails.price) * parseInt(addProduct[i].quantity),
             console.log(productCost),
@@ -119,6 +121,118 @@ const quantityChange = async (cartDisplay) => {
     })
   });
 }
+
+async function signUp() {
+  let order = document.querySelector(".cart__order__form");
+  console.log(order);
+
+  const validFirstName = function() {
+
+    let firstNameInput = order.firstName.value;
+    console.log(firstNameInput);
+    
+    let firstNameRegExp = new RegExp ("^(?=.{1,50}$)[a-z]+(?:['_.\s][a-z]+)*$", "i");
+    
+    if (firstNameRegExp.test(firstNameInput)) {
+      console.log("formulaire valide!");
+      return true;
+    } else {
+      console.log("probleme");
+      let firstNameError = document.getElementById("firstNameErrorMsg");
+      firstNameError.innerHTML = "Le prénom n'est pas valide !";
+      return false;
+    }
+  } 
+
+  const validLastName = function() {
+
+    let lastNameInput = order.lastName.value;
+    console.log(lastNameInput);
+
+    let lastNameRegExp = new RegExp ("^(?=.{1,50}$)[a-z]+(?:['_.\s][a-z]+)*$", "i");
+
+    if (lastNameRegExp.test(lastNameInput)) {
+      console.log("formulaire valide!");
+      return true;
+    } else {
+      console.log("probleme");
+      let lastNameError = document.getElementById("lastNameErrorMsg");
+      lastNameError.innerHTML = "Le nom de famille n'est pas valide !";
+      return false;
+    }
+  }
+
+  const validEmail = function() {
+
+    let emailInput = order.email.value;
+    console.log(emailInput);
+
+    let emailRegExp = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
+
+    if (emailRegExp.test(emailInput)) {
+      console.log("formulaire valide!");
+      return true;
+    } else {
+      console.log("probleme");
+      let emailError = document.getElementById("emailErrorMsg");
+      emailError.innerHTML = "Ceci n'est pas un email valide ! ";
+      return false;
+    }
+  }
+
+  order.firstName.addEventListener("change", () => {
+    validFirstName(this);
+  })
+
+  order.lastName.addEventListener("change", () => {
+    validLastName(this);
+  })
+
+  order.email.addEventListener("change", () => {
+    validEmail(this);
+  })
+
+  order.addEventListener("submit", (e) => {
+    e.preventDefault();
+    let firstNameInput = order.firstName.value;
+    let lastNameInput = order.lastName.value;
+    let emailInput = order.email.value;
+    if (validFirstName(firstNameInput) && validLastName(lastNameInput) && validEmail(emailInput)){
+
+      let formContact = {
+        firstName: order.firstName.value,
+        lastName: order.lastName.value,
+        address: order.address.value,
+        city: order.city.value,
+        email: order.email.value
+      }
+      console.log(formContact);
+
+      const contact = {
+        formContact,
+        addProduct
+      }
+
+      console.log("formulaire finement validé !");
+      localStorage.setItem("contact", JSON.stringify(formContact));
+
+      const postContact = fetch(`http://localhost:3000/api/products/order`, {
+        method: "POST",
+        body: JSON.stringify("contact"),
+        headers: {
+          'Accept': 'application/json',
+          "Content-Type" : "application/json",
+        },
+      });
+      console.log(postContact);
+
+
+    } else {
+      return;
+    }
+  })
+}
+
 
 
 
