@@ -11,7 +11,7 @@ async function cartDisplay () {
         for ( let i = 0; i < addProduct.length; i++) {
 
           async function fetchProduct() {
-            await fetch(`http://localhost:3000/api/products/${addProduct[i][0]}`)
+            await fetch(`http://localhost:3000/api/products/${addProduct[i]._id}`)
             .then((res) => res.json())
             .then((data) => productCartDetails = data);
           }
@@ -19,7 +19,7 @@ async function cartDisplay () {
 
           cartItems.insertAdjacentHTML("beforebegin", ` 
 
-            <article class="cart__item" data-id="${addProduct[i]["0"]}" data-color="${addProduct[i].color}">
+            <article class="cart__item" data-id="${addProduct[i]._id}" data-color="${addProduct[i].color}">
               <div class="cart__item__img">
                 <img src="${productCartDetails.imageUrl}" alt="${productCartDetails.altTxt}">
               </div>
@@ -32,11 +32,11 @@ async function cartDisplay () {
                 <div class="cart__item__content__settings">
                   <div class="cart__item__content__settings__quantity">
                     <p>Qté : </p>
-                    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" data-id="${addProduct[i]["0"]}" data-color="${addProduct[i].color}"
+                    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" data-id="${addProduct[i]._id}" data-color="${addProduct[i].color}"
                      value="${addProduct[i].quantity}">
                   </div>
                   <div class="cart__item__content__settings__delete">
-                    <p class="deleteItem" data-id="${addProduct[i]["0"]}" data-color="${addProduct[i].color}" >Supprimer</p>
+                    <p class="deleteItem" data-id="${addProduct[i]._id}" data-color="${addProduct[i].color}" >Supprimer</p>
                   </div>
                 </div>
               </div>
@@ -199,34 +199,45 @@ async function signUp() {
     let emailInput = order.email.value;
     if (validFirstName(firstNameInput) && validLastName(lastNameInput) && validEmail(emailInput)){
 
-      let formContact = {
-        firstName: order.firstName.value,
-        lastName: order.lastName.value,
-        address: order.address.value,
-        city: order.city.value,
-        email: order.email.value
+      let products = [];
+      for (let i = 0; i < addProduct.length; i++) {
+        products.push(addProduct[i]._id);
       }
-      console.log(formContact);
+      console.log(products);
 
-      const contact = {
-        formContact,
-        addProduct
-      }
+      const newCustomer = {
+
+        contact: {
+          firstName: order.firstName.value,
+          lastName: order.lastName.value,
+          address: order.address.value,
+          city: order.city.value,
+          email: order.email.value,
+        },
+        products
+      };
+ 
+      const newCustomerData = JSON.stringify(newCustomer);
+
+     
+      let fetchResult = "";
 
       console.log("formulaire finement validé !");
-      localStorage.setItem("contact", JSON.stringify(formContact));
+      /* localStorage.setItem("contact", JSON.stringify(formContact)); */
 
-      const postContact = fetch(`http://localhost:3000/api/products/order`, {
+       fetch("http://localhost:3000/api/products/order", {
         method: "POST",
-        body: JSON.stringify("contact"),
         headers: {
-          'Accept': 'application/json',
-          "Content-Type" : "application/json",
+          "Content-Type": "application/json",
         },
-      });
-      console.log(postContact);
-
-
+        body: newCustomerData,
+      }).then((response) => {
+        return response.json();
+      })
+      .then((response) => {
+        console.log(response.orderId);
+      })
+      
     } else {
       return;
     }

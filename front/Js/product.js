@@ -1,4 +1,6 @@
-const productId = window.location.search.split("?").join("");
+/*const productId = window.location.search.split("?").join("");*/
+let paramsId = (new URL(document.location)).searchParams;
+let productId = paramsId.get("id");
 const productItem = document.getElementById("itemDetails");
 
 let allProductDetails = [];
@@ -44,7 +46,7 @@ let button = document.getElementById("addToCartButton");
         let productDetails = [allProductDetails._id];
         let amountInput = document.getElementById("quantity");
         let select = document.getElementById("colors");
-        let productFinalDetails = Object.assign({}, productDetails, {
+        let productFinalDetails = Object.assign({}, { _id: allProductDetails._id, 
             color: `${select.value}`,
             quantity: amountInput.value,
         });
@@ -58,7 +60,7 @@ let button = document.getElementById("addToCartButton");
             console.log(productArray.length);
         } else if (productArray != null) {
             for (var i = 0; i < productArray.length; i++) {
-                if (productArray[i]._id == productDetails._id && productArray[i].color == select.value){
+                if (productArray[i]._id == allProductDetails._id && productArray[i].color == select.value){
                     return(
                         productArray[i].quantity = parseInt(productArray[i].quantity) + parseInt(amountInput.value),
                         localStorage.setItem("product-ID", JSON.stringify(productArray)),
@@ -67,8 +69,8 @@ let button = document.getElementById("addToCartButton");
                 }
             }
             for (var i = 0; i < productArray.length; i++) {
-                if (productArray[i]._id == productDetails._id && productArray[i].color != select.value || 
-                    productArray[i]._id != productDetails._id ) {
+                if (productArray[i]._id == allProductDetails._id && productArray[i].color != select.value || 
+                    productArray[i]._id != allProductDetails._id ) {
                   return (
                     productArray.push(productFinalDetails),
                     localStorage.setItem("product-ID", JSON.stringify(productArray)),
