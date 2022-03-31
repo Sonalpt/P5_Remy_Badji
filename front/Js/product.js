@@ -1,10 +1,10 @@
-/*const productId = window.location.search.split("?").join("");*/
 let paramsId = (new URL(document.location)).searchParams;
 let productId = paramsId.get("id");
 const productItem = document.getElementById("itemDetails");
 
 let allProductDetails = [];
 
+// function to get data from a specific product, who got selected by the user on the landing page //
 
 async function fetchProduct() {
     await fetch(`http://localhost:3000/api/products/${productId}`)
@@ -12,6 +12,8 @@ async function fetchProduct() {
     .then((data) => allProductDetails = data)
     .catch((err) => {console.warn('Erreur dans la construction de la requête:' + err.stack);});
 }
+
+// function to display the details of a product, in product.html //
 
 async function productDisplay() {
     await fetchProduct();
@@ -39,12 +41,11 @@ async function productDisplay() {
 };
 productDisplay();
 
+// function to add a specific product in cart, with all the conditions //
 
 let button = document.getElementById("addToCartButton");
     console.log(button);
     button.onclick = function(event) {
-        console.log("kuku le bouton");
-        let productDetails = [allProductDetails._id];
         let amountInput = document.getElementById("quantity");
         let select = document.getElementById("colors");
         let productFinalDetails = Object.assign({}, { _id: allProductDetails._id, 
@@ -52,7 +53,6 @@ let button = document.getElementById("addToCartButton");
             quantity: amountInput.value,
         });
         let productArray = JSON.parse(localStorage.getItem("products"));
-        console.log(productArray);
         if (productArray == null ) {
             productArray = [];
             if (amountInput.value > 100) {
@@ -62,7 +62,6 @@ let button = document.getElementById("addToCartButton");
             productArray.push(productFinalDetails);
             localStorage.setItem("products", JSON.stringify(productArray));
             productArray = JSON.parse(localStorage.getItem("products"));
-            console.log(productArray.length)
             }
         } else if (productArray != null) {
             for (var i = 0; i < productArray.length; i++) {

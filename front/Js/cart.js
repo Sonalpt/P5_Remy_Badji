@@ -3,20 +3,21 @@ let cartItems = document.getElementById("cart__items");
 let totalCost = 0;
 let totalOfArticles = 0;
 
-
+// the function who contains every display functions and settings in cart.html //
 async function cartDisplay () {
     if (addProduct) {
         await addProduct;
 
         for ( let i = 0; i < addProduct.length; i++) {
 
+          // function to get all needed data to display, for each product in the local storage //
           async function fetchProduct() {
             await fetch(`http://localhost:3000/api/products/${addProduct[i]._id}`)
             .then((res) => res.json())
             .then((data) => productCartDetails = data);
           }
           await fetchProduct();
-
+          // this function displays every needed data of each product contained in localstorage, directly on the page //
           cartItems.insertAdjacentHTML("beforebegin", ` 
 
             <article class="cart__item" data-id="${addProduct[i]._id}" data-color="${addProduct[i].color}">
@@ -68,6 +69,7 @@ async function cartDisplay () {
 
 cartDisplay();
 
+// function who allow the user to delete a specific product from the cart, by clicking on "Supprimer", in the specific product space //
 const removeProduct = async (cartDisplay) => {
   await cartDisplay;
   console.log ("yo je remove");
@@ -96,6 +98,7 @@ const removeProduct = async (cartDisplay) => {
   })
 };
 
+// function who allow the user to change the quantity of a specific product from the cart, by adjusting "Qté" input in the specific product space //
 const quantityChange = async (cartDisplay) => {
   await cartDisplay;
   console.log("yo le rap");
@@ -122,10 +125,12 @@ const quantityChange = async (cartDisplay) => {
   })
 };
 
+// This function manage everything about the contact form, from the regex rules to the fetch POST step //
 async function signUp() {
   let order = document.querySelector(".cart__order__form");
   console.log(order);
 
+  // firstName regex validation function //
   const validFirstName = function() {
 
     let firstNameInput = order.firstName.value;
@@ -146,6 +151,7 @@ async function signUp() {
     }
   } 
 
+  // lastName regex validation function //
   const validLastName = function() {
 
     let lastNameInput = order.lastName.value;
@@ -166,6 +172,7 @@ async function signUp() {
     }
   } 
 
+  // city regex validation function //
   const validCity = function() {
 
     let cityInput = order.city.value;
@@ -186,6 +193,7 @@ async function signUp() {
     }
   } 
 
+  // email regex validation function //
   const validEmail = function() {
 
     let emailInput = order.email.value;
@@ -222,6 +230,7 @@ async function signUp() {
     validEmail(this);
   })
 
+  // on submit, the fetch POST function //
   order.addEventListener("submit", (e) => {
     e.preventDefault();
     let firstNameInput = order.firstName.value;
@@ -248,9 +257,6 @@ async function signUp() {
       };
  
       const newCustomerData = JSON.stringify(newCustomer);
-
-     
-      let fetchResult = "";
 
       console.log("formulaire finement validé !");
       /* localStorage.setItem("contact", JSON.stringify(formContact)); */
