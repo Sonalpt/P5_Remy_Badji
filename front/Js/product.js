@@ -9,7 +9,8 @@ let allProductDetails = [];
 async function fetchProduct() {
     await fetch(`http://localhost:3000/api/products/${productId}`)
     .then((res) => res.json())
-    .then((data) => allProductDetails = data);
+    .then((data) => allProductDetails = data)
+    .catch((err) => {console.warn('Erreur dans la construction de la requête:' + err.stack);});
 }
 
 async function productDisplay() {
@@ -50,33 +51,47 @@ let button = document.getElementById("addToCartButton");
             color: `${select.value}`,
             quantity: amountInput.value,
         });
-        let productArray = JSON.parse(localStorage.getItem("product-ID"));
+        let productArray = JSON.parse(localStorage.getItem("products"));
         console.log(productArray);
         if (productArray == null ) {
             productArray = [];
+            if (amountInput.value > 100) {
+                alert("Vous ne pouvez pas avoir plus de 100 exemplaires du même article dans votre panier")
+                return;
+            } else {
             productArray.push(productFinalDetails);
-            localStorage.setItem("product-ID", JSON.stringify(productArray));
-            productArray = JSON.parse(localStorage.getItem("product-ID"));
-            console.log(productArray.length);
-        } else if (productArray != null) {
-            for (var i = 0; i < productArray.length; i++) {
-                if (productArray[i]._id == allProductDetails._id && productArray[i].color == select.value){
-                    return(
-                        productArray[i].quantity = parseInt(productArray[i].quantity) + parseInt(amountInput.value),
-                        localStorage.setItem("product-ID", JSON.stringify(productArray)),
-                        productArray = JSON.parse(localStorage.getItem("product-ID"))
-                    );
-                }
+            localStorage.setItem("products", JSON.stringify(productArray));
+            productArray = JSON.parse(localStorage.getItem("products"));
+            console.log(productArray.length)
             }
+        } else if (productArray != null) {
             for (var i = 0; i < productArray.length; i++) {
                 if (productArray[i]._id == allProductDetails._id && productArray[i].color != select.value || 
                     productArray[i]._id != allProductDetails._id ) {
-                  return (
+                        if (amountInput.value > 100) {
+                            alert("Vous ne pouvez pas avoir plus de 100 exemplaires du même article dans votre panier")
+                            return
+                        } else {
+                    return (
                     productArray.push(productFinalDetails),
-                    localStorage.setItem("product-ID", JSON.stringify(productArray)),
-                    productArray = JSON.parse(localStorage.getItem("product-ID"))
-                  );
+                    localStorage.setItem("products", JSON.stringify(productArray)),
+                    productArray = JSON.parse(localStorage.getItem("products"))
+                    );
+                    }
                 }
+                if (productArray[i]._id == allProductDetails._id && productArray[i].color == select.value){
+                    if (parseInt(productArray[i].quantity) + parseInt(amountInput.value) > 100) {
+                        alert("Vous ne pouvez pas avoir plus de 100 exemplaires du même article dans votre panier")
+                        return;
+                    } else {
+                    return(
+                        productArray[i].quantity = parseInt(productArray[i].quantity) + parseInt(amountInput.value),
+                        localStorage.setItem("products", JSON.stringify(productArray)),
+                        productArray = JSON.parse(localStorage.getItem("products"))
+                    );
+                    }
+                }
+                
             }
         }
     };  

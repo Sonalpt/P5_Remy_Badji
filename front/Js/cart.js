@@ -1,4 +1,4 @@
-let addProduct = JSON.parse(localStorage.getItem("product-ID"));
+let addProduct = JSON.parse(localStorage.getItem("products"));
 let cartItems = document.getElementById("cart__items");
 let totalCost = 0;
 let totalOfArticles = 0;
@@ -79,15 +79,15 @@ const removeProduct = async (cartDisplay) => {
       for(let i = 0; i < addProduct.length; i++){
         if (addProduct.length == 1) {
           return (
-            localStorage.removeItem("product-ID"),
+            localStorage.removeItem("products"),
             location.reload()
           )
         }
-        else if (addProduct[i]["0"] == remove.dataset.id && addProduct[i].color == remove.dataset.color) {
+        else if (addProduct[i]._id == remove.dataset.id && addProduct[i].color == remove.dataset.color) {
           return (
             addProduct.splice(i, 1),
             console.log(addProduct),
-            localStorage.setItem("product-ID", JSON.stringify(addProduct)),
+            localStorage.setItem("products", JSON.stringify(addProduct)),
             location.reload()
           )
         }
@@ -105,12 +105,12 @@ const quantityChange = async (cartDisplay) => {
     change.addEventListener("change", () => {
       console.log("test du changement");
       for(let i = 0; i < addProduct.length; i++){
-        if(addProduct[i]["0"] == change.dataset.id && addProduct[i].color == change.dataset.color) {
+        if(addProduct[i]._id == change.dataset.id && addProduct[i].color == change.dataset.color) {
           return (
             console.log(change.value),
             addProduct[i].quantity = parseInt(change.value),
             console.log(addProduct[i].quantity),
-            localStorage.setItem("product-ID", JSON.stringify(addProduct)),
+            localStorage.setItem("products", JSON.stringify(addProduct)),
             console.log("ajouté!"),
             productCost = parseInt(productCartDetails.price) * parseInt(addProduct[i].quantity),
             console.log(productCost),
@@ -119,8 +119,8 @@ const quantityChange = async (cartDisplay) => {
         }
       }
     })
-  });
-}
+  })
+};
 
 async function signUp() {
   let order = document.querySelector(".cart__order__form");
@@ -134,6 +134,8 @@ async function signUp() {
     let firstNameRegExp = new RegExp ("^(?=.{1,50}$)[a-z]+(?:['_.\s][a-z]+)*$", "i");
     
     if (firstNameRegExp.test(firstNameInput)) {
+      let firstNameError = document.getElementById("firstNameErrorMsg");
+      firstNameError.innerHTML = " ";
       console.log("formulaire valide!");
       return true;
     } else {
@@ -152,6 +154,8 @@ async function signUp() {
     let lastNameRegExp = new RegExp ("^(?=.{1,50}$)[a-z]+(?:['_.\s][a-z]+)*$", "i");
 
     if (lastNameRegExp.test(lastNameInput)) {
+      let lastNameError = document.getElementById("lastNameErrorMsg");
+      lastNameError.innerHTML = " ";
       console.log("formulaire valide!");
       return true;
     } else {
@@ -160,7 +164,27 @@ async function signUp() {
       lastNameError.innerHTML = "Le nom de famille n'est pas valide !";
       return false;
     }
-  }
+  } 
+
+  const validCity = function() {
+
+    let cityInput = order.city.value;
+    console.log(cityInput);
+    
+    let cityRegExp = new RegExp ("^(?=.{1,50}$)[a-z]+(?:['_.\s][a-z]+)*$", "i");
+    
+    if (cityRegExp.test(cityInput)) {
+      let cityError = document.getElementById("cityErrorMsg");
+      cityError.innerHTML = " ";
+      console.log("formulaire valide!");
+      return true;
+    } else {
+      console.log("probleme");
+      let cityError = document.getElementById("cityErrorMsg");
+      cityError.innerHTML = "Le nom de la ville n'est pas valide";
+      return false;
+    }
+  } 
 
   const validEmail = function() {
 
@@ -170,6 +194,8 @@ async function signUp() {
     let emailRegExp = new RegExp ("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
 
     if (emailRegExp.test(emailInput)) {
+      let emailError = document.getElementById("emailErrorMsg");
+      emailError.innerHTML = " ";
       console.log("formulaire valide!");
       return true;
     } else {
@@ -186,6 +212,10 @@ async function signUp() {
 
   order.lastName.addEventListener("change", () => {
     validLastName(this);
+  })
+
+  order.city.addEventListener("change", () => {
+    validCity(this);
   })
 
   order.email.addEventListener("change", () => {
@@ -236,7 +266,10 @@ async function signUp() {
       })
       .then((response) => {
         console.log(response.orderId);
+        localStorage.removeItem("products");
+        window.location.href = 'confirmation.html?orderId=' + response.orderId;
       })
+      .catch((err) => {console.warn('Erreur dans la construction de la requête:' + err.stack);});
       
     } else {
       return;
