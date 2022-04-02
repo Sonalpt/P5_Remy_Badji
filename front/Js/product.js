@@ -55,7 +55,11 @@ let button = document.getElementById("addToCartButton");
         let productArray = JSON.parse(localStorage.getItem("products"));
         if (productArray == null ) {
             productArray = [];
-            if (amountInput.value > 100) {
+            if (parseInt(amountInput.value) <= 0) {
+                alert("Vous devez ajouter un nombre d'articles entre 1 et 100")
+                return;
+            }
+            else if (amountInput.value > 100) {
                 alert("Vous ne pouvez pas avoir plus de 100 exemplaires du même article dans votre panier")
                 return;
             } else {
@@ -67,7 +71,11 @@ let button = document.getElementById("addToCartButton");
             for (var i = 0; i < productArray.length; i++) {
                 if (productArray[i]._id == allProductDetails._id && productArray[i].color != select.value || 
                     productArray[i]._id != allProductDetails._id ) {
-                        if (amountInput.value > 100) {
+                        if (parseInt(amountInput.value) <= 0) {
+                            alert("Vous devez ajouter un nombre d'articles entre 1 et 100")
+                            return;
+                        }
+                        else if (amountInput.value > 100) {
                             alert("Vous ne pouvez pas avoir plus de 100 exemplaires du même article dans votre panier")
                             return
                         } else {
@@ -79,7 +87,11 @@ let button = document.getElementById("addToCartButton");
                     }
                 }
                 if (productArray[i]._id == allProductDetails._id && productArray[i].color == select.value){
-                    if (parseInt(productArray[i].quantity) + parseInt(amountInput.value) > 100) {
+                    if (parseInt(amountInput.value) <= 0) {
+                        alert("Vous devez ajouter un nombre d'articles entre 1 et 100")
+                        return;
+                    }
+                    else if (parseInt(productArray[i].quantity) + parseInt(amountInput.value) > 100) {
                         alert("Vous ne pouvez pas avoir plus de 100 exemplaires du même article dans votre panier")
                         return;
                     } else {
